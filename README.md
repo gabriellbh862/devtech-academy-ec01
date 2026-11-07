@@ -1,7 +1,7 @@
 # DevTech Academy
 
-## Exercício 1
+## Exercício 2
 
-Cadastro, listagem, edição e exclusão em um formulário HTML. Os dados ficam em um array de objetos.
+O cadastro usa instâncias de `Aluno`. A tabela exibe a situação com `isAprovado()`, e `toString()` formata o registro.
 
 Abra `public/index.html` no navegador para testar. Recarregar a página limpa os dados.

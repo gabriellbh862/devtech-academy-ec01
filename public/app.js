@@ -1,5 +1,22 @@
 "use strict";
 
+class Aluno {
+  constructor(nome, idade, curso, notaFinal) {
+    this.nome = nome;
+    this.idade = idade;
+    this.curso = curso;
+    this.notaFinal = notaFinal;
+  }
+
+  isAprovado() {
+    return this.notaFinal >= 7;
+  }
+
+  toString() {
+    return `${this.nome} (${this.idade} anos, ${this.curso}, nota ${formatarNota.format(this.notaFinal)})`;
+  }
+}
+
 const alunos = [];
 let alunoEmEdicao = null;
 
@@ -58,7 +75,7 @@ function criarBotao(rotulo, aluno) {
   const botao = document.createElement("button");
   botao.type = "button";
   botao.textContent = rotulo;
-  botao.setAttribute("aria-label", `${rotulo} ${aluno.nome}`);
+  botao.setAttribute("aria-label", `${rotulo} ${aluno.toString()}`);
   return botao;
 }
 
@@ -67,7 +84,7 @@ function renderizarTabela() {
 
   if (alunos.length === 0) {
     const celula = tabela.insertRow().insertCell();
-    celula.colSpan = 5;
+    celula.colSpan = 6;
     celula.textContent = "Nenhum aluno cadastrado.";
     return;
   }
@@ -79,6 +96,7 @@ function renderizarTabela() {
       aluno.idade,
       aluno.curso,
       formatarNota.format(aluno.notaFinal),
+      aluno.isAprovado() ? "Aprovado" : "Reprovado",
     ];
     valores.forEach((valor) => {
       linha.insertCell().textContent = valor;
@@ -121,12 +139,7 @@ form.onsubmit = function (evento) {
     return;
   }
 
-  const aluno = {
-    nome: nomeLimpo,
-    idade: idade.valueAsNumber,
-    curso: curso.value,
-    notaFinal: notaFinal.valueAsNumber,
-  };
+  const aluno = new Aluno(nomeLimpo, idade.valueAsNumber, curso.value, notaFinal.valueAsNumber);
   if (alunoEmEdicao) {
     atualizarAluno(alunoEmEdicao, aluno);
     notificar(`Alterações de ${aluno.nome} salvas.`);
