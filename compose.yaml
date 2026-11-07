@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:${DEVTECH_PORT:-8080}:80"
+    volumes:
+      - ./public:/usr/share/nginx/html:ro

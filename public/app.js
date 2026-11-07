@@ -30,13 +30,21 @@ const botaoSalvar = document.querySelector("#salvar");
 const botaoCancelar = document.querySelector("#cancelar");
 const tabela = document.querySelector("#lista-alunos");
 const mensagem = document.querySelector("#mensagem");
+const cursos = Array.from(curso.options, (opcao) => opcao.value).filter(Boolean);
 const formatarNota = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 20 });
+const formatarMedia = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
 
 const cadastrarAluno = (aluno) => alunos.push(aluno);
 const atualizarAluno = (original, atualizado) => {
   alunos[alunos.indexOf(original)] = atualizado;
 };
 const excluirAluno = (aluno) => alunos.splice(alunos.indexOf(aluno), 1);
+const calcularMedia = (valores) => {
+  if (valores.length === 0) return "Sem dados";
+
+  const soma = valores.reduce((total, valor) => total + valor, 0);
+  return formatarMedia.format(soma / valores.length);
+};
 
 function notificar(texto) {
   mensagem.textContent = texto;
@@ -117,8 +125,37 @@ function renderizarTabela() {
   });
 }
 
+function preencherLista(seletor, itens, textoVazio) {
+  const lista = document.querySelector(seletor);
+  lista.replaceChildren();
+
+  const textos = itens.length ? itens : [textoVazio];
+  textos.forEach((texto) => {
+    const item = document.createElement("li");
+    item.textContent = texto;
+    lista.append(item);
+  });
+}
+
+function renderizarRelatorios() {
+  const aprovados = alunos.filter((aluno) => aluno.isAprovado());
+  const nomesOrdenados = alunos.map((aluno) => aluno.nome)
+    .sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const quantidadePorCurso = alunos.reduce((quantidades, aluno) => {
+    quantidades[aluno.curso]++;
+    return quantidades;
+  }, Object.fromEntries(cursos.map((nomeCurso) => [nomeCurso, 0])));
+
+  document.querySelector("#media-notas").textContent = calcularMedia(alunos.map((aluno) => aluno.notaFinal));
+  document.querySelector("#media-idades").textContent = calcularMedia(alunos.map((aluno) => aluno.idade));
+  preencherLista("#aprovados", aprovados.map((aluno) => aluno.toString()), "Nenhum aluno aprovado.");
+  preencherLista("#nomes-ordenados", nomesOrdenados, "Nenhum aluno cadastrado.");
+  preencherLista("#alunos-por-curso", cursos.map((nomeCurso) => `${nomeCurso}: ${quantidadePorCurso[nomeCurso]}`));
+}
+
 function renderizar() {
   renderizarTabela();
+  renderizarRelatorios();
 }
 
 nome.addEventListener("input", function () {
