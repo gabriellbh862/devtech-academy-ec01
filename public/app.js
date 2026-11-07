@@ -32,20 +32,15 @@ const tabela = document.querySelector("#lista-alunos");
 const mensagem = document.querySelector("#mensagem");
 const formatarNota = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 20 });
 
-function cadastrarAluno(aluno) {
-  alunos.push(aluno);
-}
-
-function atualizarAluno(original, atualizado) {
+const cadastrarAluno = (aluno) => alunos.push(aluno);
+const atualizarAluno = (original, atualizado) => {
   alunos[alunos.indexOf(original)] = atualizado;
-}
-
-function excluirAluno(aluno) {
-  alunos.splice(alunos.indexOf(aluno), 1);
-}
+};
+const excluirAluno = (aluno) => alunos.splice(alunos.indexOf(aluno), 1);
 
 function notificar(texto) {
   mensagem.textContent = texto;
+  console.log(texto);
 }
 
 function limparFormulario() {
@@ -75,7 +70,7 @@ function criarBotao(rotulo, aluno) {
   const botao = document.createElement("button");
   botao.type = "button";
   botao.textContent = rotulo;
-  botao.setAttribute("aria-label", `${rotulo} ${aluno.toString()}`);
+  botao.setAttribute("aria-label", `${rotulo} ${aluno.nome}`);
   return botao;
 }
 
@@ -103,12 +98,12 @@ function renderizarTabela() {
     });
 
     const editar = criarBotao("Editar", aluno);
-    editar.onclick = function () {
+    editar.addEventListener("click", function () {
       iniciarEdicao(aluno);
-    };
+    });
 
     const excluir = criarBotao("Excluir", aluno);
-    excluir.onclick = function () {
+    excluir.addEventListener("click", function () {
       if (!window.confirm(`Excluir ${aluno.nome}?`)) return;
 
       if (alunoEmEdicao === aluno) limparFormulario();
@@ -116,7 +111,7 @@ function renderizarTabela() {
       renderizar();
       notificar(`${aluno.nome} foi excluído do cadastro.`);
       nome.focus();
-    };
+    });
 
     linha.insertCell().append(editar, " ", excluir);
   });
@@ -126,11 +121,11 @@ function renderizar() {
   renderizarTabela();
 }
 
-nome.oninput = function () {
+nome.addEventListener("input", function () {
   nome.setCustomValidity("");
-};
+});
 
-form.onsubmit = function (evento) {
+form.addEventListener("submit", function (evento) {
   evento.preventDefault();
   const nomeLimpo = nome.value.trim();
   if (!nomeLimpo) {
@@ -150,12 +145,12 @@ form.onsubmit = function (evento) {
   limparFormulario();
   renderizar();
   nome.focus();
-};
+});
 
-botaoCancelar.onclick = function () {
+botaoCancelar.addEventListener("click", function () {
   limparFormulario();
   notificar("Edição cancelada.");
   nome.focus();
-};
+});
 
 renderizar();
